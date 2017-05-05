@@ -1,5 +1,5 @@
 # fTree
-An R package that implements methods for growing complex regression trees
+An R package that implements methods for growing functional regression trees
 
 To install this package open R or Rstudio and type: devtools::install_github("ogru/fTree")
 
