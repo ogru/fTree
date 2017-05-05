@@ -23,7 +23,7 @@ List findAllBestSplits(arma::uvec INDEX, double currentGoodness, int k);
 // Main function:
 List fTreeRPart(arma::uvec INDEX, double currentGoodness, int height);
 
-// Boostrap:
+// Bootstrap:
 List fTreeBootstrap(arma::mat BOOTINDEX);
 
 // Cost functions:
@@ -48,7 +48,7 @@ int    costType;
 int    minSPLIT;
 int    minBUCKET;
 double minDEVIANCE;
-int    kP; // number of predictors to consider in random forest type of tree.
+int    kP; // the number of predictors to consider in random forest type of tree.
 
 // [[Rcpp::export]]
 double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D,
