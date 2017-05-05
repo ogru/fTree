@@ -1,0 +1,13 @@
+Package: fTree
+Type: Package
+Title: Functional regression trees
+Version: 1.1
+Date: 2017-05-04
+Author: Ognjen Grujic
+Maintainer: Ognjen Grujic <ognjengr@gmail.com>
+Description: This package fits and visualizes functional and multivariate regression trees. It is capable of fitting a single tree, functional and multivariate bagged trees and functional and multivariate random forests. 
+License: GPL2
+LazyData: TRUE
+RoxygenNote: 6.0.1
+LinkingTo: Rcpp, RcppArmadillo
+Imports: Rcpp, RcppArmadillo, ggplot2, testthat, foreach, doSNOW
