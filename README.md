@@ -8,6 +8,12 @@ After installation completes view package vignette (NOT UPLOADED YET!) to get st
 If package installation fails make sure to update R and Rstudio to the latest version(s). 
 This code relies on Rcpp and RcppArmadillo and it compiles cpp code upon installation. Focus your troubleshooting to that domain. 
 
+If installation fails with an error: "‘to_string’ is not a member of ‘std’"
+
+This means you need to tell g++ compiler to use C++11 with the following command (in R/Rstudio): Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
+
+Then repeat devtools::install_github("ogru/fTree")
+
 Any other problems? Feel free to contact me. 
 
 
