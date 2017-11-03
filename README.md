@@ -9,9 +9,7 @@ If package installation fails make sure to update your `R` and `Rstudio` to the 
 
 This code relies on the `Rcpp` and `RcppArmadillo` packages and it compiles Cpp code upon installation. In case of problems, focus your troubleshooting to that domain. 
 
-If installation fails with an error: "‘to_string’ is not a member of ‘std’"
-
-This means that you need to tell your `g++` compiler to use `C++11` with the following command (in R/Rstudio): `Sys.setenv("PKG_CXXFLAGS"="-std=c++11")`. Then repeat `devtools::install_github("ogru/fTree")`.
+If installation fails with the following error: "‘to_string’ is not a member of ‘std’", this means that you need to set up your `g++` compiler to use `C++11`. You can accomplish this with the following command (in R/Rstudio): `Sys.setenv("PKG_CXXFLAGS"="-std=c++11")`. Then repeat `devtools::install_github("ogru/fTree")`.
 
 Any other problems? Feel free to email ognjengr@gmail.com. 
 
