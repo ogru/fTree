@@ -7,8 +7,6 @@ To install this package open R or Rstudio and type: `devtools::install_github("o
  ## Package Installation
  To install the package open `R` or `Rstudio` and type: `devtools::install_github("ogru/fTree")`. Make sure to have the `devtools` package installed (i.e. `install.packages("devtools")`).
   
- After installation completes view the package vignette (NOT UPLOADED YET!) to get started: https://rawgit.com/ogru/fTree/master/vignette/fTree_get_started.html
- 
  ## Tutorial/Vignette
  After installing view the vignette to get started: https://rawgit.com/ogru/fTree/master/vignette/first_steps.html
   
