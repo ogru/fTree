@@ -1,0 +1,5 @@
+"0","matplot(OIL[,train][,indices$rightInd], type = ""l"", col=""blue"", lty=1, add=TRUE)
+"
+"2","Error in plot.xy(xy.coords(x, y), type = type, ...) : 
+  plot.new has not been called yet
+"

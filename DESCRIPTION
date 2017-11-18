@@ -1,0 +1,13 @@
+Package: fTree
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1
+Date: 2016-08-04
+Author: Who wrote it
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+LazyData: TRUE
+RoxygenNote: 6.0.1
+LinkingTo: Rcpp, RcppArmadillo, ggplot2, testthat, foreach, doSNOW, Matrix
+Imports: Rcpp, RcppArmadillo, ggplot2, testthat, foreach, doSNOW, Matrix

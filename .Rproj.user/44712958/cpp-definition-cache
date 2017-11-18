@@ -1,0 +1,311 @@
+[
+    {
+        "definitions" : [
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 56,
+                "name" : "loadVars(arma::mat, arma::mat, arma::mat, arma::mat, int, int, int, int, double, double)",
+                "parent_name" : "",
+                "usr" : "c:@F@loadVars#$@N@arma@C@Mat>#d#S0_#S0_#S0_#I#I#I#I#d#d#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 82,
+                "name" : "unloadVars",
+                "parent_name" : "",
+                "usr" : "c:@F@unloadVars#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 98,
+                "name" : "findOneBestContinuousSplit(arma::uvec, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@findOneBestContinuousSplit#$@N@arma@C@Col>#i#I#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 151,
+                "name" : "findOneBestCategoricalSplit(arma::uvec, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@findOneBestCategoricalSplit#$@N@arma@C@Col>#i#I#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 203,
+                "name" : "findAllBestSplits(arma::uvec, double)",
+                "parent_name" : "",
+                "usr" : "c:@F@findAllBestSplits#$@N@arma@C@Col>#i#d#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 253,
+                "name" : "fTreeRPart(arma::uvec, double, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@fTreeRPart#$@N@arma@C@Col>#i#d#I#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 303,
+                "name" : "fTreeBootstrap(arma::mat)",
+                "parent_name" : "",
+                "usr" : "c:@F@fTreeBootstrap#$@N@arma@C@Mat>#d#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 318,
+                "name" : "computeGoodness(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@computeGoodness#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 339,
+                "name" : "sseCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@sseCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 356,
+                "name" : "mahalanobisCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@mahalanobisCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 373,
+                "name" : "l2Cost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@l2Cost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 387,
+                "name" : "wssCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@wssCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 399,
+                "name" : "sql2Cost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@sql2Cost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 413,
+                "name" : "rdsCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@rdsCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 11,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 428,
+                "name" : "getAllCombinations(int)",
+                "parent_name" : "",
+                "usr" : "c:@F@getAllCombinations#I#"
+            },
+            {
+                "column" : 13,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 448,
+                "name" : "combToString(arma::vec)",
+                "parent_name" : "",
+                "usr" : "c:@F@combToString#$@N@arma@C@Col>#d#"
+            },
+            {
+                "column" : 12,
+                "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 464,
+                "name" : "getCombinIndices(arma::vec, arma::vec, bool)",
+                "parent_name" : "",
+                "usr" : "c:@F@getCombinIndices#$@N@arma@C@Col>#d#S0_#b#"
+            }
+        ],
+        "file" : "/Users/ogyg/Dropbox/TreesPaper/package/fTree/src/main.cpp",
+        "file_last_write" : 1510545845
+    },
+    {
+        "definitions" : [
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 54,
+                "name" : "loadVars(arma::mat, arma::mat, arma::mat, arma::mat, int, int, int, int, double)",
+                "parent_name" : "",
+                "usr" : "c:@F@loadVars#$@N@arma@C@Mat>#d#S0_#S0_#S0_#I#I#I#I#d#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 77,
+                "name" : "unloadVars",
+                "parent_name" : "",
+                "usr" : "c:@F@unloadVars#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 93,
+                "name" : "findOneBestContinuousSplit(arma::uvec, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@findOneBestContinuousSplit#$@N@arma@C@Col>#i#I#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 146,
+                "name" : "findOneBestCategoricalSplit(arma::uvec, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@findOneBestCategoricalSplit#$@N@arma@C@Col>#i#I#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 198,
+                "name" : "findAllBestSplits(arma::uvec, double)",
+                "parent_name" : "",
+                "usr" : "c:@F@findAllBestSplits#$@N@arma@C@Col>#i#d#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 248,
+                "name" : "fTreeRPart(arma::uvec, double, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@fTreeRPart#$@N@arma@C@Col>#i#d#I#"
+            },
+            {
+                "column" : 6,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 298,
+                "name" : "fTreeBootstrap(arma::mat)",
+                "parent_name" : "",
+                "usr" : "c:@F@fTreeBootstrap#$@N@arma@C@Mat>#d#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 313,
+                "name" : "computeGoodness(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@computeGoodness#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 333,
+                "name" : "sseCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@sseCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 350,
+                "name" : "mahalanobisCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@mahalanobisCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 367,
+                "name" : "l2Cost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@l2Cost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 381,
+                "name" : "wssCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@wssCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 8,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 393,
+                "name" : "rdsCost(arma::uvec)",
+                "parent_name" : "",
+                "usr" : "c:@F@rdsCost#$@N@arma@C@Col>#i#"
+            },
+            {
+                "column" : 11,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 408,
+                "name" : "getAllCombinations(int)",
+                "parent_name" : "",
+                "usr" : "c:@F@getAllCombinations#I#"
+            },
+            {
+                "column" : 13,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 428,
+                "name" : "combToString(arma::vec)",
+                "parent_name" : "",
+                "usr" : "c:@F@combToString#$@N@arma@C@Col>#d#"
+            },
+            {
+                "column" : 12,
+                "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+                "kind" : 6,
+                "line" : 444,
+                "name" : "getCombinIndices(arma::vec, arma::vec, bool)",
+                "parent_name" : "",
+                "usr" : "c:@F@getCombinIndices#$@N@arma@C@Col>#d#S0_#b#"
+            }
+        ],
+        "file" : "/Users/ogyg/Google Drive/Functional_Research/TreeS_workingDir/fTree/src/main.cpp",
+        "file_last_write" : 1493327482
+    }
+]
