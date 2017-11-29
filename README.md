@@ -1,9 +1,7 @@
 # fTree
 
 An R package that implements the methods for growing regression trees with functional output data.
-  
-To install this package open R or Rstudio and type: `devtools::install_github("ogru/fTree")`. Make sure to have the `devtools` package installed (i.e. `install.packages("devtools")`).
- 
+   
 ## Package Installation
 To install the package open `R` or `Rstudio` and type: `devtools::install_github("ogru/fTree")`. Make sure to have the `devtools` package installed (i.e. `install.packages("devtools")`).
   
