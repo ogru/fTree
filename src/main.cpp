@@ -352,7 +352,7 @@ double sseCost(arma::uvec INDEX){
 
 }
 
-// [[Rcpp::export]]
+/*
 double mahalanobisCost(arma::uvec INDEX){
 
   arma::mat currentMat = Yout.cols(INDEX);
@@ -368,6 +368,29 @@ double mahalanobisCost(arma::uvec INDEX){
   return trace(outVec);
 
 }
+*/
+
+// [[Rcpp::export]]
+double mahalanobisCost(arma::uvec INDEX){
+
+  arma::mat currentMat = Yout.cols(INDEX);
+  arma::vec outVec(currentMat.n_cols);
+  arma::mat cVinv = Vinv;
+
+  arma::vec meanVector = currentMat * arma::ones(currentMat.n_cols);
+  meanVector /= (double)currentMat.n_cols;
+
+  for(int i = 0; i < currentMat.n_cols; i++){
+    arma::mat X = currentMat.col(i) - meanVector;
+    arma::mat Y = X.t() * cVinv;
+    outVec(i) = as_scalar(Y * X);
+  }
+
+  return sum(outVec) ;
+
+}
+
+
 
 // [[Rcpp::export]]
 double l2Cost(arma::uvec INDEX){
