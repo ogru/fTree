@@ -124,7 +124,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
 
     loadVars(.X, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
 
-    .INDEX = seq(1, nrow(.X) - 1)
+    .INDEX = seq(1, nrow(.X)) - 1
     .cGood         <- fTree:::computeGoodness(.INDEX)
     out[['trees']][[1]] <- fTree:::fTreeRPart(.INDEX, .cGood, 0)
 
@@ -610,4 +610,40 @@ varSensitivity <- function(ftreeObj = NULL, mode = "plot"){
 }
 
 
+
+
+#' Returns leaf data, ID's and associated indices
+#'
+#' @param .ftree - an Ftree data structure
+#' @details It returns a data frame with two columns. The first column contains indices of the data relative to the original ordering, while the second column represents a unique leaf ID.
+#' @author  Ogy Grujic (\email{ognjengr@gmail.com})
+#'
+#' @export
+#'
+returnLeafData <- function(.ftree) {
+
+  .leafIndex = 0
+  .leafIndices = data.frame(Indices = integer(), LeafID = integer())
+
+  .leafReturn <- function(.node) {
+
+    # Is leaf?
+    if(.node$isLeaf == 1){
+      .leafIndices <<- rbind(.leafIndices, data.frame(Indices = .node$indices,
+                                                      LeafID = .leafIndex))
+      .leafIndex <<- .leafIndex + 1
+      return
+
+    } else {
+
+      .leafReturn(.node$left)
+      .leafReturn(.node$right)
+
+    }
+
+  }
+  .leafReturn(.ftree$trees[[1]])
+
+  return(.leafIndices)
+}
 

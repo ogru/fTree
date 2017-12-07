@@ -4,7 +4,7 @@
 \alias{ftree}
 \title{Fits a regression tree to functional data}
 \usage{
-ftree(.X = NULL, .Y = NULL, .D = NULL, SIGMA_inv = NULL,
+ftree(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL,
   cost.type = "sse", tree.type = "single", nP = if (tree.type ==
   "randomforest") round((ncol(.X)/3)) else ncol(.X), nBoot = 1000,
   .minSplit = 20, .minBucket = round(.minSplit/3), .cp = 0.005,
