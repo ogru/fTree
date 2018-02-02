@@ -13,7 +13,9 @@ ftree(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL,
 \arguments{
 \item{.X}{- An nxp matrix of covariates}
 
-\item{.Y}{- A matrix of functions stacked in columns. Assumes that all functions were evaluated on the same time grid}
+\item{.Y}{- A matrix of functions stacked in columns. Assumes that all functions were evaluated on the same time temporal grid.
+You can also pass multiple such matrices stacked in a list. This option is allowed only in the case of distance
+based cost functions (\code{wss, rdist}).}
 
 \item{.D}{- Optional distance matrix for wss/rdist cost function}
 

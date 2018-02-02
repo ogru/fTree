@@ -4,7 +4,9 @@
 #' @title Fits a regression tree to functional data
 #'
 #' @param .X - An nxp matrix of covariates
-#' @param .Y - A matrix of functions stacked in columns. Assumes that all functions were evaluated on the same time grid
+#' @param .Y - A matrix of functions stacked in columns. Assumes that all functions were evaluated on the same time temporal grid.
+#'             You can also pass multiple such matrices stacked in a list. This option is allowed only in the case of distance
+#'             based cost functions (\code{wss, rdist}).
 #' @param .D - Optional distance matrix for wss/rdist cost function
 #' @param cost.type  - Cost function type. It can be any of the following: "sse", "mahalanobis", "wss", "l2norm", "rdist", "l2square" (see the details).
 #' @param tree.type  - What type of tree based predictor you want to fit. Currently supported: single tree, random forest, bagging
@@ -45,6 +47,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
   tree.type <- match.arg(tree.type, c("single", "randomforest", "bagging"))
 
   if(is.null(.X)) stop('Covariates were not provided!')
+  if(is.null(.Y)) stop('Outputs were not provided!')
 
   .X = as.matrix(.X)
 
@@ -70,6 +73,10 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
     .nObservations = ncol(.D)
 
   } else { # sse, mahalanobis, l2norm
+
+    if(is.list(.Y) && !is.data.frame(.Y)){
+      stop(paste('.Y is a simple list! This is not allowed for cost function="',cost.type, '"', sep=""))
+    }
 
     .Y = as.matrix(.Y)
     .nObservations = ncol(.Y)
@@ -111,6 +118,10 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
   out[['minSplit']]   <- .minSplit
   out[['minBucket']]  <- .minBucket
   out[['cP']]         <- .cp
+
+  if(is.list(.Y) && !is.data.frame(.Y)){
+    .Y = matrix(0, 2, 2)
+  }
 
   .cType = switch(cost.type,
                  "sse"         = 1,
@@ -487,13 +498,29 @@ predictFtree <- function(ftreeObj = NULL, .Xnew = NULL){
   .treePred <- function(.node, .xnew){
          if(.node$isLeaf == 1){
 
-           temp <- ftreeObj$functions[,(.node$indices + 1)]
+           # Check if the output is a list (multivariate)
+           if(is.list(ftreeObj$functions) && !is.data.frame(ftreeObj$functions)){
 
-           if(is.null(ncol(temp))){
-             return(temp)
-           } else {
-             return(rowMeans(temp))
+              temp <- vector('list', length(ftreeObj$functions))
+              names(temp) <- names(ftreeObj$functions)
+
+              for(i in 1:length(temp)){
+                temp[[i]] <- rowMeans(ftreeObj$functions[[i]][,(.node$indices + 1)])
+              }
+              return(temp)
+
+           } else{ # It's a data frame then (or a matrix), in either case a single variate data.
+
+             temp <- ftreeObj$functions[,(.node$indices + 1)]
+
+             if(is.null(ncol(temp))){
+               return(temp)
+             } else {
+               return(rowMeans(temp))
+             }
            }
+
+
            # if(is.null(nrow(ftreeObj$functions[,.node$indices]))) {
            #    return(ftreeObj$functions[,(.node$indices + 1)])
            # } else {
@@ -526,11 +553,25 @@ predictFtree <- function(ftreeObj = NULL, .Xnew = NULL){
 
   # computes predictions for each row of Xnew (if applicable).
   # Xnew should be provided as a data frame even if only one row is provided.
-  .predictions <- apply(.Xnew, 1, function(x){
-    ldply(ftreeObj$trees, function(y){
-      .treePred(y, x)
+
+  if(is.list(ftreeObj$functions) && !is.data.frame(ftreeObj$functions)){
+    .predictions <- apply(.Xnew, 1, function(x){
+        .A <- llply(ftreeObj$trees, function(y){.treePred(y, x)})
+        .Out <- vector('list', length(ftreeObj$functions))
+          for(i in 1:length(.Out)){
+            .Out[[i]] <- ldply(.A, function(y){return(y[[i]])})
+          }
+        names(.Out) <- names(.A[[1]])
+        return(.Out)
+        })
+
+  } else {
+    .predictions <- apply(.Xnew, 1, function(x){
+      ldply(ftreeObj$trees, function(y){
+        .treePred(y, x)
+      })
     })
-  })
+  }
 
   # n_trees <- length(ftreeObj$trees)
   # # .predictions <- vector("list", nrow(.Xnew))
