@@ -61,11 +61,11 @@ getAllCombinations <- function(N) {
     .Call('_fTree_getAllCombinations', PACKAGE = 'fTree', N)
 }
 
-combToString <- function(combination) {
-    .Call('_fTree_combToString', PACKAGE = 'fTree', combination)
+combToString <- function(combination, categories) {
+    .Call('_fTree_combToString', PACKAGE = 'fTree', combination, categories)
 }
 
-getCombinIndices <- function(Xcov, Combination, lr) {
-    .Call('_fTree_getCombinIndices', PACKAGE = 'fTree', Xcov, Combination, lr)
+getCombinIndices <- function(Xcov, Combination, categories) {
+    .Call('_fTree_getCombinIndices', PACKAGE = 'fTree', Xcov, Combination, categories)
 }
 

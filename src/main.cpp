@@ -37,8 +37,8 @@ double sql2Cost(arma::uvec INDEX);
 
 // Helpers for categorical predictors:
 arma::mat getAllCombinations(int N);
-std::string combToString(arma::vec combination);
-arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, bool lr);
+std::string combToString(arma::vec combination, arma::vec categories);
+arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, arma::vec categories);
 
 // Global Variables: ###########################################################
 arma::mat Xcov;
@@ -161,6 +161,8 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
 
   arma::vec unq     = unique(curCovariate);
 
+  //cout << unq << endl;
+
   //cout << "FOBCS pt1" << endl;
 
   if(unq.n_elem == 1) {
@@ -177,6 +179,8 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
 
   arma::mat splits  = getAllCombinations(unq.n_elem);
 
+  //cout<<splits<<endl;
+
   //cout << splits <<endl;
 
   arma::vec goodnessVec(3); goodnessVec.ones(); // 0 - total, 1 - left; 2 - right;
@@ -186,8 +190,9 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
 
   for(int i = 0; i < splits.n_rows; i++){
 
-    arma::uvec leftInd  = INDEX(getCombinIndices(curCovariate, splits.row(i).t(), 1));
-    arma::uvec rightInd = INDEX(getCombinIndices(curCovariate, splits.row(i).t(), 0));
+    arma::uvec flags    = getCombinIndices(curCovariate, splits.row(i).t(), unq);
+    arma::uvec leftInd  = INDEX(arma::find(flags == 1));
+    arma::uvec rightInd = INDEX(arma::find(flags == 0));
 
     //cout << "FOBCS pt6" << endl;
 
@@ -211,7 +216,7 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
         //cout << "FOBCS pt8" << endl;
         //cout << splits.row(i)<<endl;
 
-        ret["splitPoint"] = combToString(splits.row(i).t());   //  has to convert to string
+        ret["splitPoint"] = combToString(splits.row(i).t(), unq);   //  has to convert to string
         //cout << "FOBCS pt9" << endl;
 
       }
@@ -512,13 +517,13 @@ arma::mat getAllCombinations(int N)
 }
 
 // [[Rcpp::export]]
-std::string combToString(arma::vec combination){
+std::string combToString(arma::vec combination, arma::vec categories){
 
   std::string ret;
 
   for(int i = 0; i < combination.n_elem; i++){
     if(combination(i) == 1){
-      ret +=  "," + std::to_string(i+1);
+      ret +=  "," + std::to_string(int(categories(i)));
     }
   }
 
@@ -528,19 +533,19 @@ std::string combToString(arma::vec combination){
 }
 
 // [[Rcpp::export]]
-arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, bool lr){
+arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, arma::vec categories){
 
   //cout << "GCIND pt1" << endl;
 
   arma::uvec ret(Xcov.n_elem); ret.zeros();
 
-  for(int i=0; i<Combination.n_elem; i++){
+  for(int i = 0; i < Combination.n_elem; i++){
     if(Combination(i) == 1) {
-      ret.elem(arma::find(Xcov == i+1)).ones();
+      ret.elem(arma::find(Xcov == categories(i))).ones();
     }
   }
-  //cout << "GCIND pt2" << endl;
 
-  return arma::find(ret == lr);
+ // return arma::find(ret == lr);
+ return ret ;
 }
 
