@@ -7,12 +7,13 @@
 using namespace Rcpp;
 
 // loadVars
-double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D, int nPredictors, int cType, int mSplit, int mBucket, double cp, double argStep);
-RcppExport SEXP _fTree_loadVars(SEXP XSEXP, SEXP YSEXP, SEXP VSEXP, SEXP DSEXP, SEXP nPredictorsSEXP, SEXP cTypeSEXP, SEXP mSplitSEXP, SEXP mBucketSEXP, SEXP cpSEXP, SEXP argStepSEXP) {
+double loadVars(arma::mat X, arma::uvec covarType, arma::mat Y, arma::mat V, arma::mat D, int nPredictors, int cType, int mSplit, int mBucket, double cp, double argStep);
+RcppExport SEXP _fTree_loadVars(SEXP XSEXP, SEXP covarTypeSEXP, SEXP YSEXP, SEXP VSEXP, SEXP DSEXP, SEXP nPredictorsSEXP, SEXP cTypeSEXP, SEXP mSplitSEXP, SEXP mBucketSEXP, SEXP cpSEXP, SEXP argStepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type covarType(covarTypeSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type V(VSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
@@ -22,7 +23,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type mBucket(mBucketSEXP);
     Rcpp::traits::input_parameter< double >::type cp(cpSEXP);
     Rcpp::traits::input_parameter< double >::type argStep(argStepSEXP);
-    rcpp_result_gen = Rcpp::wrap(loadVars(X, Y, V, D, nPredictors, cType, mSplit, mBucket, cp, argStep));
+    rcpp_result_gen = Rcpp::wrap(loadVars(X, covarType, Y, V, D, nPredictors, cType, mSplit, mBucket, cp, argStep));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -209,7 +210,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_fTree_loadVars", (DL_FUNC) &_fTree_loadVars, 10},
+    {"_fTree_loadVars", (DL_FUNC) &_fTree_loadVars, 11},
     {"_fTree_unloadVars", (DL_FUNC) &_fTree_unloadVars, 0},
     {"_fTree_findOneBestContinuousSplit", (DL_FUNC) &_fTree_findOneBestContinuousSplit, 2},
     {"_fTree_findOneBestCategoricalSplit", (DL_FUNC) &_fTree_findOneBestCategoricalSplit, 2},
