@@ -10,7 +10,9 @@ using namespace arma;
 // PROTOTYPES: #################################################################
 
 // Loads/Unloads all variables into memory
-double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D, int cType);
+double loadVars(arma::mat X, arma::uvec covarType, arma::mat Y, arma::mat V, arma::mat D,
+                int nPredictors, int cType, int mSplit,
+                int mBucket, double cp, double argStep);
 void unloadVars();
 
 // These find one best split for continuous and categorical (unorderable) predictors.
