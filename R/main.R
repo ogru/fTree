@@ -159,7 +159,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
       .bootList   <- matToList(.BOOTINDEX, .no_cores)
 
       out[['trees']] <- Reduce("c", foreach(i = 1:length(.bootList)) %dopar% {
-        loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp)
+        loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
         output <- fTreeBootstrap(.bootList[[i]] - 1)
         unloadVars();
         return(output)
@@ -169,7 +169,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
 
     } else{ # single core mode.
 
-      loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp)
+      loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
       out[['trees']] <- fTree:::fTreeBootstrap(.BOOTINDEX - 1)
       unloadVars();
 
