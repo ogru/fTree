@@ -2,13 +2,14 @@
 % Please edit documentation in R/main.R
 \name{ftree}
 \alias{ftree}
-\title{Fits a regression tree to functional data}
+\title{Fits a regression tree to functional and multivariate output data}
 \usage{
 ftree(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL,
   cost.type = "sse", tree.type = "single", nP = if (tree.type ==
   "randomforest") round((ncol(.X)/3)) else ncol(.X), nBoot = 1000,
   .minSplit = 20, .minBucket = round(.minSplit/3), .cp = 0.005,
-  ArgStep = 1, verbose = TRUE, parallel = TRUE)
+  ArgStep = 1, verbose = TRUE, parallel = TRUE, .predictorType = rep(0,
+  ncol(.X)))
 }
 \arguments{
 \item{.X}{- An nxp matrix of covariates}
@@ -34,21 +35,21 @@ based cost functions (\code{wss, rdist}).}
 \item{.cp}{- complexity parameter, split is accepted if it provides imporovement that is at least cp*rootGoodness}
 
 \item{verbose}{- print progres (default = TRUE)}
+
+\item{.predictorType}{- A boolean vector of length \code{ncol(.X)} specifying the types of predictors (0 - Continuous, 1 - Categorical). It defaults to \code{all = 0}.}
 }
 \details{
 This code implements various functional and multivariate tree splitting routines.
          See the vignette for a detailed description of each cost function and for a tutorial on how to use the code.
          Note that this is a research code, hence it has more cost functions than we would normally ship within a release version.
-         The \code{'sse'} and \code{'wss'} cost functions are completely experimental, use them at your own responsibility. Also note that
-         'mahalanobis' cost function takes a while to compute when using bootstrapped trees. Our recommendation is to use it only
-         in the case of \code{tree.type='single tree'}. The fastest to compute cost function is \code{'rdist'}.
+         The \code{'sse'} and \code{'wss'} cost functions are completely experimental, use them at your own responsibility.
 
          When using \code{'rdist'} there are two modeling paths you can take. The first path is to provide a distance type through
          variable \code{.D} (i.e. \code{.D = 'euclidean'}). The distances are computed internally with the generic \code{dist} function.  The provided distance type
-         must to match one of the options available for variable \code{method} in \code{dist()} (see \code{help(dist)}).
+         must match one of the options available for variable \code{method} in \code{dist()} (see \code{help(dist)}).
          If you are using a distance that cannot be computed with the \code{dist} function then you are allowed to provide a pre-computed
          distance matrix by assigning it to the input variable \code{.D} (i.e. \code{.D = <my_dist_matrix>}).
 }
 \author{
-Ognjen Grujic (\email{ogyg@stanford.edu} or \email{ognjengr@gmail.com})
+Ognjen Grujic (\email{ognjengr@gmail.com})
 }

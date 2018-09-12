@@ -7,12 +7,13 @@
 using namespace Rcpp;
 
 // loadVars
-double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D, int nPredictors, int cType, int mSplit, int mBucket, double cp, double argStep);
-RcppExport SEXP _fTree_loadVars(SEXP XSEXP, SEXP YSEXP, SEXP VSEXP, SEXP DSEXP, SEXP nPredictorsSEXP, SEXP cTypeSEXP, SEXP mSplitSEXP, SEXP mBucketSEXP, SEXP cpSEXP, SEXP argStepSEXP) {
+double loadVars(arma::mat X, arma::uvec covarType, arma::mat Y, arma::mat V, arma::mat D, int nPredictors, int cType, int mSplit, int mBucket, double cp, double argStep);
+RcppExport SEXP _fTree_loadVars(SEXP XSEXP, SEXP covarTypeSEXP, SEXP YSEXP, SEXP VSEXP, SEXP DSEXP, SEXP nPredictorsSEXP, SEXP cTypeSEXP, SEXP mSplitSEXP, SEXP mBucketSEXP, SEXP cpSEXP, SEXP argStepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type covarType(covarTypeSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type Y(YSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type V(VSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
@@ -22,7 +23,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type mBucket(mBucketSEXP);
     Rcpp::traits::input_parameter< double >::type cp(cpSEXP);
     Rcpp::traits::input_parameter< double >::type argStep(argStepSEXP);
-    rcpp_result_gen = Rcpp::wrap(loadVars(X, Y, V, D, nPredictors, cType, mSplit, mBucket, cp, argStep));
+    rcpp_result_gen = Rcpp::wrap(loadVars(X, covarType, Y, V, D, nPredictors, cType, mSplit, mBucket, cp, argStep));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -184,32 +185,33 @@ BEGIN_RCPP
 END_RCPP
 }
 // combToString
-std::string combToString(arma::vec combination);
-RcppExport SEXP _fTree_combToString(SEXP combinationSEXP) {
+std::string combToString(arma::vec combination, arma::vec categories);
+RcppExport SEXP _fTree_combToString(SEXP combinationSEXP, SEXP categoriesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type combination(combinationSEXP);
-    rcpp_result_gen = Rcpp::wrap(combToString(combination));
+    Rcpp::traits::input_parameter< arma::vec >::type categories(categoriesSEXP);
+    rcpp_result_gen = Rcpp::wrap(combToString(combination, categories));
     return rcpp_result_gen;
 END_RCPP
 }
 // getCombinIndices
-arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, bool lr);
-RcppExport SEXP _fTree_getCombinIndices(SEXP XcovSEXP, SEXP CombinationSEXP, SEXP lrSEXP) {
+arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, arma::vec categories);
+RcppExport SEXP _fTree_getCombinIndices(SEXP XcovSEXP, SEXP CombinationSEXP, SEXP categoriesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type Xcov(XcovSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type Combination(CombinationSEXP);
-    Rcpp::traits::input_parameter< bool >::type lr(lrSEXP);
-    rcpp_result_gen = Rcpp::wrap(getCombinIndices(Xcov, Combination, lr));
+    Rcpp::traits::input_parameter< arma::vec >::type categories(categoriesSEXP);
+    rcpp_result_gen = Rcpp::wrap(getCombinIndices(Xcov, Combination, categories));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_fTree_loadVars", (DL_FUNC) &_fTree_loadVars, 10},
+    {"_fTree_loadVars", (DL_FUNC) &_fTree_loadVars, 11},
     {"_fTree_unloadVars", (DL_FUNC) &_fTree_unloadVars, 0},
     {"_fTree_findOneBestContinuousSplit", (DL_FUNC) &_fTree_findOneBestContinuousSplit, 2},
     {"_fTree_findOneBestCategoricalSplit", (DL_FUNC) &_fTree_findOneBestCategoricalSplit, 2},
@@ -224,7 +226,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_fTree_sql2Cost", (DL_FUNC) &_fTree_sql2Cost, 1},
     {"_fTree_rdsCost", (DL_FUNC) &_fTree_rdsCost, 1},
     {"_fTree_getAllCombinations", (DL_FUNC) &_fTree_getAllCombinations, 1},
-    {"_fTree_combToString", (DL_FUNC) &_fTree_combToString, 1},
+    {"_fTree_combToString", (DL_FUNC) &_fTree_combToString, 2},
     {"_fTree_getCombinIndices", (DL_FUNC) &_fTree_getCombinIndices, 3},
     {NULL, NULL, 0}
 };

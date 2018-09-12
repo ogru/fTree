@@ -1,7 +1,7 @@
 #' @useDynLib fTree
 #' @importFrom Rcpp sourceCpp
 #'
-#' @title Fits a regression tree to functional data
+#' @title Fits a regression tree to functional and multivariate output data
 #'
 #' @param .X - An nxp matrix of covariates
 #' @param .Y - A matrix of functions stacked in columns. Assumes that all functions were evaluated on the same time temporal grid.
@@ -16,21 +16,20 @@
 #' @param .minBucket - minimum number of elements in leaf nodes. Defaults to .minSplit/3.
 #' @param .cp - complexity parameter, split is accepted if it provides imporovement that is at least cp*rootGoodness
 #' @param verbose - print progres (default = TRUE)
+#' @param .predictorType - A boolean vector of length \code{ncol(.X)} specifying the types of predictors (0 - Continuous, 1 - Categorical). It defaults to \code{all = 0}.
 #'
 #' @details This code implements various functional and multivariate tree splitting routines.
 #'          See the vignette for a detailed description of each cost function and for a tutorial on how to use the code.
 #'          Note that this is a research code, hence it has more cost functions than we would normally ship within a release version.
-#'          The \code{'sse'} and \code{'wss'} cost functions are completely experimental, use them at your own responsibility. Also note that
-#'          'mahalanobis' cost function takes a while to compute when using bootstrapped trees. Our recommendation is to use it only
-#'          in the case of \code{tree.type='single tree'}. The fastest to compute cost function is \code{'rdist'}.
+#'          The \code{'sse'} and \code{'wss'} cost functions are completely experimental, use them at your own responsibility.
 #'
 #'          When using \code{'rdist'} there are two modeling paths you can take. The first path is to provide a distance type through
 #'          variable \code{.D} (i.e. \code{.D = 'euclidean'}). The distances are computed internally with the generic \code{dist} function.  The provided distance type
-#'          must to match one of the options available for variable \code{method} in \code{dist()} (see \code{help(dist)}).
+#'          must match one of the options available for variable \code{method} in \code{dist()} (see \code{help(dist)}).
 #'          If you are using a distance that cannot be computed with the \code{dist} function then you are allowed to provide a pre-computed
 #'          distance matrix by assigning it to the input variable \code{.D} (i.e. \code{.D = <my_dist_matrix>}).
 #'
-#' @author Ognjen Grujic (\email{ogyg@stanford.edu} or \email{ognjengr@gmail.com})
+#' @author Ognjen Grujic (\email{ognjengr@gmail.com})
 #'
 #' @export
 #'
@@ -38,7 +37,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
                   tree.type = "single", nP = if(tree.type == "randomforest") round((ncol(.X)/3))
                   else ncol(.X), nBoot = 1000,
                   .minSplit = 20, .minBucket = round(.minSplit/3), .cp = 0.005, ArgStep = 1,
-                  verbose = TRUE, parallel = TRUE) {
+                  verbose = TRUE, parallel = TRUE, .predictorType = rep(0, ncol(.X))) {
 
   require(foreach)
   require(doParallel)
@@ -51,10 +50,14 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
 
   .X = as.matrix(.X)
 
+  if(all(.predictorType == 0)) cat(".predictorType assumed default values! All predictors are considered continuous!\n")
+
+  if(!all(.predictorType == 1 | .predictorType == 0)) stop(".predictorType is boolean! Meaning 0's and 1's, you provided some other values. Please check!")
+
   if(cost.type == "wss" | cost.type == "rdist"){
 
     if(is.null(.D)) {
-      stop('For cost type WSS you MUST provide a distance matrix or distance type (i.e. "euclidean"). ')
+      stop('For cost type WSS you MUST provide a distance matrix or a distance type (i.e. "euclidean"). ')
     } else if(is.character(.D)){
       if(is.null(.Y)) {
         stop('Functions were not provided! Please provide functions and distance type or just a distance matrix.')
@@ -112,6 +115,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
 
   out <- list()
   out[['covariates']] <- .X
+  out[['predictorType']] <- .predictorType
   out[['functions']]  <- .Y
   out[['costType']]   <- cost.type
   out[['treeType']]   <- tree.type
@@ -133,7 +137,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
 
   if(tree.type=="single"){
 
-    loadVars(.X, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
+    loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
 
     .INDEX = seq(1, nrow(.X)) - 1
     .cGood         <- fTree:::computeGoodness(.INDEX)
@@ -155,7 +159,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
       .bootList   <- matToList(.BOOTINDEX, .no_cores)
 
       out[['trees']] <- Reduce("c", foreach(i = 1:length(.bootList)) %dopar% {
-        loadVars(.X, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp)
+        loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
         output <- fTreeBootstrap(.bootList[[i]] - 1)
         unloadVars();
         return(output)
@@ -165,7 +169,7 @@ ftree <- function(.X = NULL, .Y = NULL, .D = NULL, .SIGMA_inv = NULL, cost.type 
 
     } else{ # single core mode.
 
-      loadVars(.X, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp)
+      loadVars(.X, .predictorType, .Y, .SIGMA_inv, .D, nP, .cType, .minSplit, .minBucket, .cp, ArgStep)
       out[['trees']] <- fTree:::fTreeBootstrap(.BOOTINDEX - 1)
       unloadVars();
 
@@ -289,8 +293,8 @@ extractNodeData <- function(.tree, .index, .node = NULL, .round=NULL){
                                colour    = colour,
                                stringsAsFactors = FALSE)
 
-      horizontals$left[1]  <- paste(.NODE$left$indices, collapse=",")
-      horizontals$right[1] <- paste(.NODE$right$indices, collapse=",")
+      horizontals$left[1]  <- paste(.NODE$left$indices, collapse = ",")
+      horizontals$right[1] <- paste(.NODE$right$indices, collapse = ",")
 
       # Vertical Lines:
       verticals  = data.frame(xStart   = c(.NODE$left$midpoint + .nLeftLeaves,
@@ -317,12 +321,15 @@ extractNodeData <- function(.tree, .index, .node = NULL, .round=NULL){
 
   .extractNode(.tree$trees[[.index]], 0, "0")
 
-  if(is.null(.round)){
-    .labels <- .segments$value
-  } else {
-    .labels <- round(as.double(.segments$value),.round)
+  .labels <- .segments$value
+
+  if(!is.null(.round)){
+    .wContinuous <- which(.tree[['predictorType']] == 0)
+    .indices <- (.segments$predictor %in% .wContinuous)
+    .labels[.indices] <- as.character(round(as.double(.segments$value[.indices]),.round))
   }
-  .segments$label <- paste(colnames(.tree$covariates)[.segments$predictor], .labels, sep=" > ")
+
+  .segments$label <- paste(colnames(.tree$covariates)[.segments$predictor], .labels, sep=" < ")
   .segments$label[is.na(.segments$predictor)] <- NA
   .segments$colour = factor(.segments$colour, levels=c("black","red","blue"))
   return(.segments)
@@ -533,9 +540,12 @@ predictFtree <- function(ftreeObj = NULL, .Xnew = NULL){
            .predictor <- .node$bestPredictor + 1
 
            if(length(grep(",", .node$splitPoint)) > 0){ # it's categorical:
-              # create a set out of .node$splitPoint
-              # check if category present in .xnew is inside the set.
-              # if yes then its left, if not then its right.
+
+             if(.xnew[.predictor] %in% strsplit(.node$splitPoint, ",")[[1]]){ # Its left
+               .treePred(.node$left, .xnew)
+             } else { # Its right.
+               .treePred(.node$right, .xnew)
+             }
 
            } else {
              if(.xnew[.predictor] < as.numeric(.node$splitPoint)){

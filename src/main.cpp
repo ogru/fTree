@@ -10,7 +10,9 @@ using namespace arma;
 // PROTOTYPES: #################################################################
 
 // Loads/Unloads all variables into memory
-double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D, int cType);
+double loadVars(arma::mat X, arma::uvec covarType, arma::mat Y, arma::mat V, arma::mat D,
+                int nPredictors, int cType, int mSplit,
+                int mBucket, double cp, double argStep);
 void unloadVars();
 
 // These find one best split for continuous and categorical (unorderable) predictors.
@@ -37,11 +39,12 @@ double sql2Cost(arma::uvec INDEX);
 
 // Helpers for categorical predictors:
 arma::mat getAllCombinations(int N);
-std::string combToString(arma::vec combination);
-arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, bool lr);
+std::string combToString(arma::vec combination, arma::vec categories);
+arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, arma::vec categories);
 
 // Global Variables: ###########################################################
 arma::mat Xcov;
+arma::uvec covType; // This is the new feature for categorical predictors
 arma::mat Yout;
 arma::mat Vinv;
 arma::mat Dist;
@@ -49,15 +52,16 @@ int    costType;
 int    minSPLIT;
 int    minBUCKET;
 double minDEVIANCE;
-int    kP; // number of predictors to consider in random forest type of tree.
+int    kP; // the number of predictors to consider in random forest type of tree.
 double ArgStep;
 
 // [[Rcpp::export]]
-double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D,
+double loadVars(arma::mat X, arma::uvec covarType, arma::mat Y, arma::mat V, arma::mat D,
                 int nPredictors, int cType = 1, int mSplit = 15,
                 int mBucket = 10, double cp = 0.01, double argStep = 1){
 
   Xcov        = X;
+  covType     = covarType; // new categorical feature!
   Yout        = Y;
   Vinv        = V;
   Dist        = D;
@@ -81,6 +85,7 @@ double loadVars(arma::mat X, arma::mat Y, arma::mat V, arma::mat D,
 // [[Rcpp::export]]
 void unloadVars(){
     Xcov.clear();
+    covType.clear(); // a new capability for categorical predictors.
     Yout.clear();
     Vinv.clear();
     Dist.clear();
@@ -158,22 +163,40 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
 
   arma::vec unq     = unique(curCovariate);
 
+  //cout << unq << endl;
+
+  //cout << "FOBCS pt1" << endl;
+
   if(unq.n_elem == 1) {
     return(ret);
   }
 
+  //cout << "FOBCS pt2" << endl;
+
   // this is where you will check for unorderable predictors and handle appropriately
   // important modification is that "splitPoint" changes to become a string.
   // the rest remains the same.
+
+  //cout << "FOBCS pt3" << endl;
+
   arma::mat splits  = getAllCombinations(unq.n_elem);
+
+  //cout<<splits<<endl;
+
+  //cout << splits <<endl;
 
   arma::vec goodnessVec(3); goodnessVec.ones(); // 0 - total, 1 - left; 2 - right;
   goodnessVec = goodnessVec/0.0;
 
+  //cout << "FOBCS pt4" << endl;
+
   for(int i = 0; i < splits.n_rows; i++){
 
-    arma::uvec leftInd  = getCombinIndices(curCovariate, splits.row(i), 1);
-    arma::uvec rightInd = getCombinIndices(curCovariate, splits.row(i), 0);
+    arma::uvec flags    = getCombinIndices(curCovariate, splits.row(i).t(), unq);
+    arma::uvec leftInd  = INDEX(arma::find(flags == 1));
+    arma::uvec rightInd = INDEX(arma::find(flags == 0));
+
+    //cout << "FOBCS pt6" << endl;
 
     if(leftInd.n_elem >= minBUCKET && rightInd.n_elem >= minBUCKET){
 
@@ -182,6 +205,8 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
 
       if((leftGoodness + rightGoodness) < goodnessVec(0)){ // if it improves save it.
 
+        //cout << "FOBCS pt7" << endl;
+
         goodnessVec(0) = leftGoodness + rightGoodness;
         goodnessVec(1) = leftGoodness;
         goodnessVec(2) = rightGoodness;
@@ -189,7 +214,12 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
         ret["leftInd"]    = leftInd;
         ret["rightInd"]   = rightInd;
         ret["goodness"]   = goodnessVec;
-        ret["splitPoint"] = combToString(splits.row(i));   //  has to convert to string
+
+        //cout << "FOBCS pt8" << endl;
+        //cout << splits.row(i)<<endl;
+
+        ret["splitPoint"] = combToString(splits.row(i).t(), unq);   //  has to convert to string
+        //cout << "FOBCS pt9" << endl;
 
       }
     }
@@ -203,30 +233,44 @@ List findOneBestCategoricalSplit(arma::uvec INDEX, int pIndex){
 List findAllBestSplits(arma::uvec INDEX, double currentGoodness){
 
   int nP = Xcov.n_cols;
-  arma::uvec currentPredictors = conv_to<uvec>::from(linspace(0, nP - 1, nP));
+  arma::uvec currentPredictors = conv_to<uvec>::from(linspace(0, nP - 1, nP)); // All predictors!
   arma::mat goodness(3, nP); goodness.fill(datum::nan); // row 0 = total; row 1 = left; row 2 = right;
   double bestGoodness = currentGoodness;
   List ret;
+  List splitData;
+
+  //cout << "FABS pt1" << endl;
 
   ret["bestPredictor"] = -1;
 
-  if(kP != nP){ // modification for random forest approach
+  if(kP != nP){ // modification for random forest approach:
     std::random_shuffle(currentPredictors.begin(), currentPredictors.end() );
     currentPredictors = currentPredictors.subvec(0, kP - 1);
   }
 
+  // Loop through predictors
   for(int i = 0; i < currentPredictors.size(); i++){
 
     int cIndex = currentPredictors(i);
+    //cout << "FABS pt2" << endl;
 
-    // here we will modify for unorderable predictors.
+    if(covType(cIndex) == 1) { // by convention, we code categorical as 1, continuous as 0.
 
-    // Continuous predictors:
-    List splitData = findOneBestContinuousSplit(INDEX, cIndex);
+      // here we will modify for unorderable predictors.
+      //cout << "FABS pt2a" << endl;
 
+      splitData = findOneBestCategoricalSplit(INDEX, cIndex);
+
+    } else {
+      //cout << "FABS pt2b" << endl;
+
+      // Continuous predictors:
+      splitData = findOneBestContinuousSplit(INDEX, cIndex);
+
+    }
     //if(R_finite(splitData["splitPoint"]) == 1){ // if the best split was found start checking.
 
-    std::string splitPoint = splitData["splitPoint"];
+    std::string splitPoint = splitData["splitPoint"];  // Its a string! enhorabuena! :)
     std::string notFound ("NA");
 
     if(notFound.compare(splitPoint) != 0){
@@ -263,7 +307,12 @@ List fTreeRPart(arma::uvec INDEX, double currentGoodness, int depth){
 
   if(INDEX.n_elem > minSPLIT){
 
+    //cout << "Point1 made" << endl;
+
     List allSplits      = findAllBestSplits(INDEX, currentGoodness) ;
+
+    //cout << "Point1a made" << endl;
+
     int bestPredictor   = allSplits["bestPredictor"] ;
 
     if(bestPredictor == -1) { // it happens that the best predictor/best split cannot be found.
@@ -271,14 +320,16 @@ List fTreeRPart(arma::uvec INDEX, double currentGoodness, int depth){
     }
 
     arma::vec cGoodness   = allSplits["goodness"] ;
+    //cout << "Point2 made" << endl;
 
     if( (currentGoodness - cGoodness(0)) > minDEVIANCE ){   // if it improves continue
 
       ret["isLeaf"]         = 0 ;
       ret["splitsGoodness"] = allSplits["allGoodness"] ;    // a matrix with the goodness of all parameters
       ret["bestPredictor"]  = allSplits["bestPredictor"] ;  // winning predictor
-      ret["splitPoint"]     = allSplits["splitPoint"] ;     // winning split
+      ret["splitPoint"]     = allSplits["splitPoint"] ;     // winning split (for categorical: A string of left categories!)
 
+      // Recursion:----------------
       List left             = fTreeRPart(allSplits["leftInd"]  , cGoodness(1), depth + 1) ;
       List right            = fTreeRPart(allSplits["rightInd"] , cGoodness(2), depth + 1) ;
 
@@ -290,7 +341,7 @@ List fTreeRPart(arma::uvec INDEX, double currentGoodness, int depth){
       int nRightLeaves      = right["nLeaves"] ;
 
       ret["nLeaves"]        = nLeftLeaves + nRightLeaves ;
-      ret["midpoint"]       = (2*nLeftLeaves + nRightLeaves) / 2.0 ;
+      ret["midpoint"]       = (2 * nLeftLeaves + nRightLeaves) / 2.0 ;
 
     }
   }
@@ -468,13 +519,13 @@ arma::mat getAllCombinations(int N)
 }
 
 // [[Rcpp::export]]
-std::string combToString(arma::vec combination){
+std::string combToString(arma::vec combination, arma::vec categories){
 
   std::string ret;
 
   for(int i = 0; i < combination.n_elem; i++){
     if(combination(i) == 1){
-      ret +=  "," + std::to_string(i+1);
+      ret +=  "," + std::to_string(int(categories(i)));
     }
   }
 
@@ -484,15 +535,19 @@ std::string combToString(arma::vec combination){
 }
 
 // [[Rcpp::export]]
-arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, bool lr){
+arma::uvec getCombinIndices(arma::vec Xcov, arma::vec Combination, arma::vec categories){
+
+  //cout << "GCIND pt1" << endl;
 
   arma::uvec ret(Xcov.n_elem); ret.zeros();
 
-  for(int i=0; i<Combination.n_elem; i++){
+  for(int i = 0; i < Combination.n_elem; i++){
     if(Combination(i) == 1) {
-      ret.elem(arma::find(Xcov == i+1)).ones();
+      ret.elem(arma::find(Xcov == categories(i))).ones();
     }
   }
-  return arma::find(ret == lr);
+
+ // return arma::find(ret == lr);
+ return ret ;
 }
 
